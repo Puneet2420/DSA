@@ -1,125 +1,112 @@
-#include<iostream>
-//#include<string>
-//#include<vector>
-
-// heap is a complete binary tree
-// left and right node have values less then root node
+#include<bits/stdc++.h>
 using namespace std;
-class heap{
-    public:
-    int *arr;
-    int size;
-    heap(){
-        size=0;
-        arr=new int[100];
-    }
 
-   //inserting elements 
-    void insert(int val){
-        size=size+1;
-        int index=size;
-        arr[index]=val;
-        while(index>1){
-            int parent=index/2;
-            if(arr[parent]<arr[index]){
-                swap(arr[parent],arr[index]);
-                index=parent;
+class Heap{
+    int *nums;
+    int size;
+    public:
+    Heap(){
+        nums=new int[100];
+        size=0;
+    }
+    // for inserting purpose
+    void heapifyUp(int i){
+        while(i>1){
+            int parent=i/2;
+            if(nums[parent]<nums[i]){
+                swap(nums[i],nums[parent]);
+                i=parent;
             }
-            else return;
+            else break;
         }
     }
-
-    //deleting element
-    void deletefromHeap(){
+    // for deleting purpose
+    void heapifyDown(int i){
+        int largest=i;
+        int left=i*2;
+        int right=i*2+1;
+        if(left<=size && nums[largest]<nums[left]){
+            largest=left;
+        }
+        if(right<=size && nums[largest]<nums[right]){
+            largest=right;
+        }
+        if(largest!=i){
+            swap(nums[i],nums[largest]);
+            heapifyDown(largest);
+        }
+    }
+    void insert(int val){
+        size++;
+        nums[size]=val;
+        heapifyUp(size);
+    }
+    void deletetop(){
         if(size==0){
-            cout<<"nothing to delete"<<endl;
+            cout<<"Empty heap !"<<endl;
             return;
         }
-        // deleteing
-        arr[1]=arr[size];
+        swap(nums[size],nums[0]);
         size--;
-        //taking node to its correct position
-        int i=1;
-        while(i<size){
-            int leftIndex=2*i;
-            int rightIndex=2*i+1;
-            if(leftIndex<size && arr[leftIndex]>arr[i]){
-                swap(arr[i],arr[leftIndex]);
-                i=leftIndex;
-            }
-            else if(rightIndex<size && arr[rightIndex]>arr[i]){
-                swap(arr[i],arr[rightIndex]);
-                i=rightIndex;
-            }
-            else{
-                return;
-            }
-        }
+        heapifyDown(0);
     }
-
- 
-    //printing
+    int top(){
+        return nums[1];
+    }
     void print(){
+        cout<<"Given heap is printed below !"<<endl;
         for(int i=1;i<=size;i++){
-            cout<<arr[i]<<" ";
+            cout<<nums[i]<<" ";
         }
         cout<<endl;
     }
 };
 
-   //heapify
-    void heapify(int *arr,int n,int i){
+// This also works for index zero.
+void heapify(vector<int>&nums,int size,int i){
         int largest=i;
-        int left=2*i;
-        int right=2*i+1;
-
-        if(left<=n && arr[largest] < arr[left]){
+        int left=i*2+1;
+        int right=i*2+2;
+        if(left<=size && nums[largest]<nums[left]){
             largest=left;
         }
-        if(right<=n && arr[largest] < arr[right]){
+        if(right<=size && nums[largest]<nums[right]){
             largest=right;
         }
-        // checking if the largest is updated or note
         if(largest!=i){
-            swap(arr[largest],arr[i]);
-            heapify(arr,n,largest);
+            swap(nums[i],nums[largest]);
+            heapify(nums,size,largest);
         }
     }
-
-    //heapsort
-    void heapsort(int arr[],int n){
-        int size=n;
-        while(size>1){
-            // step 1
-            swap(arr[size],arr[1]);
-            size--;
-            heapify(arr,size,1);
+    void heapsort(vector<int>&nums){
+        int n=nums.size()-1;
+        for(int i=n/2;i>=0;i--){
+            heapify(nums,n,i);
+        }
+        while(n>0){
+            swap(nums[n],nums[0]);
+            heapify(nums,n-1,0);
+            n--;
         }
     }
-
-
 int main(){
-    heap h;
-    h.insert(1); h.insert(3); h.insert(2); h.insert(5); h.print();
-    h.deletefromHeap();
-    h.print();
+    // Heap heap;
+    // vector<int>nums={8,7,3,2,4,2,1,5,6,8,9,100,500};
+    // for(auto it:nums){
+    //     heap.insert(it);
+    // }
+    // for(int i=0;i<7;i++){
+    //     heap.deletetop();
+    //     heap.print();
+    // }
+    // heap.print();
 
-    //heap creation
-    int arr[6]={-1,54,53,55,52,50};   
-    int n=6;
-    for(int i=n/2;i>=1;i--){
-        heapify(arr,n,i);
-    }
-    cout<<"printing array after heapify"<<endl;
-    for(int i=1;i<n;i++){
-        cout<<arr[i]<<" ";
-    }
 
-    //heapsort
-    heapsort(arr,n);
-    cout<<"printing array heap sort"<<endl;
-    for(int i=1;i<n;i++){
-        cout<<arr[i]<<" ";
-    }
-return 0;
+    vector<int>nums={1000,7,3,2,4,2,1,5,6,8,9,100,500};
+    int n=nums.size();
+    heapsort(nums);
+    for(auto it:nums) cout<<it<<" ";
+    cout<<endl;
+
+    return 0;
 }
